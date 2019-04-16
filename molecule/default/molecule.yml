@@ -1,0 +1,41 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: instance
+    image: ubuntu:18.04
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  # log: True
+  inventory:
+    group_vars:
+      all:
+        awx_version: ${AWX_VERSION}
+        awx_docker: ${AWX_CUSTOM_DOCKER}
+        awx_docker_flavor: ${AWX_CUSTOM_DOCKER_FLAVOR}
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+
+scenario:
+  test_sequence:
+    - lint
+    - cleanup
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy

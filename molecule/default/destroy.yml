@@ -1,0 +1,11 @@
+---
+- name: Destroy
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: cleanup after test
+      import_role:
+        name: computerlyrik.awx
+        tasks_from: cleanup
+      vars:
+        awx__version: "{{ awx_version | default('4.0.0', true) }}"

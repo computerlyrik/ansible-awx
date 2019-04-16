@@ -1,0 +1,5 @@
+- name: copy docker file
+  template:
+    src: "Dockerfile-awx_{{ awx__builtin_docker_flavor }}"
+    dest: "{{ item.destination }}"
+  notify: run awx installer

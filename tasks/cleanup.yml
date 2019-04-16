@@ -1,0 +1,23 @@
+- name: stop the containers manual
+  docker_container:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - awx_web
+    - awx_task
+    - memcached
+    - rabbitmq
+    - postgres
+  when: awx__version is version_compare('4.0.0', '<', strict=True)
+
+- name: stop the containers via service
+  docker_service:
+    project_src: "{{ awx__compose_path | default('/tmp/awxcompose', true) }}"
+    stopped: yes
+  register: awx_compose_start
+  when: awx__version is version_compare('4.0.0', '>=', strict=True)
+
+- name: remove checkout directory
+  file:
+    path: "{{ awx__checkout_path }}"
+    state: absent

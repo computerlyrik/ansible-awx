@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: computerlyrik.awx
+      vars:
+        awx__version: "{{ awx_version | default('4.0.0', true) }}"
+        awx__admin_password: password123
+        awx__secret_key: myS3cr3tK3y
+        awx__build_docker_container: "{{ awx_docker | default(false) }}"
+        awx__builtin_docker_flavor: "{{ awx_docker_flavor | default('debops') }}"

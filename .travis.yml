@@ -1,0 +1,32 @@
+---
+sudo: required
+language: python
+dist: xenial
+services:
+  - docker
+before_install:
+  - sudo apt-get -qq update
+install:
+  - pip install 'molecule[docker]'
+matrix:
+  include:
+    - name: "standard installation AWX 3"
+      env:
+        - AWX_VERSION: 3.0.1
+    - name: "standard installation AWX 4"
+      env:
+        - AWX_VERSION: 4.0.0
+  exclude:
+    - name: "debops custom docker image"
+      env:
+        - AWX_CUSTOM_DOCKER: true
+        - AWX_CUSTOM_DOCKER_FLAVOR: debops
+    - name: "python3 custom docker image"
+      env:
+        - AWX_CUSTOM_DOCKER: true
+        - AWX_CUSTOM_DOCKER_FLAVOR: py3
+script:
+  - cd ../..
+  - mv $TRAVIS_BUILD_DIR computerlyrik.awx
+  - cd computerlyrik.awx
+  - molecule test

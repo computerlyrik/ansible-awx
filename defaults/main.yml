@@ -1,0 +1,19 @@
+awx__version: 4.0.0
+
+awx__checkout_path: /opt/awx_checkout
+awx__installer_path: "{{ awx__checkout_path }}/installer"
+
+# for custom debugging use default if not set, e.g. /opt/awxcompose
+awx__compose_path:
+
+# Settings if awx web and task containers are custom builds
+awx__build_docker_container: false
+awx__use_awx_builder_image: true
+awx__builtin_docker_flavor: debops
+awx__web_image_name: "awx_web_{{ awx__builtin_docker_flavor }}"
+awx__task_image_name: "awx_task_{{ awx__builtin_docker_flavor }}"
+
+
+# NEED TO BE SET
+awx__admin_password:
+awx__secret_key:

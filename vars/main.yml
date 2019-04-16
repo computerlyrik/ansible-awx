@@ -1,0 +1,8 @@
+# use defaults of awx installer if not set
+
+# Set custom hostnames for docker machines
+awx__web_hostname:
+awx__task_hostname:
+
+# set this to 80 when if you want to directly run as http service
+awx__web_host_port:

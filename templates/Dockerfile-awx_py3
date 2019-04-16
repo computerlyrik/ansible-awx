@@ -1,0 +1,11 @@
+FROM ansible/{{ item.source_image }}:{{ awx__version }}
+
+USER root
+
+RUN yum install -y gcc openldap-devel python-devel
+RUN yum install python36-devel libxml2-devel krb5-devel
+
+RUN git clone https://github.com/ansible/awx.git /opt/awx_checkout
+WORKDIR /opt/awx_checkout
+RUN git checkout {{ awx__version }}
+RUN VENV_BASE=/var/lib/awx/venv make requirements_ansible_py3

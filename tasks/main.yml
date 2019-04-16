@@ -1,0 +1,52 @@
+- name: awx__admin_password should be defined
+  assert:
+    that:
+      - awx__admin_password is not none
+    msg: "Set the mandatory variable 'awx__admin_password'"
+  when: awx__admin_password is none
+
+- name: awx__secret_key should be defined
+  assert:
+    that:
+      - awx__secret_key is not none
+    msg: "Set the mandatory variable 'awx__secret_key'"
+  when: awx__secret_key is none
+
+- name: install package dependencies
+  apt:
+    name:
+      - docker.io
+      - python-docker
+      - ansible
+
+- name: install package for AWX 4 +
+  apt:
+    name:
+      - docker-compose
+  when: awx__version is version_compare('4.0.0', '>=', strict=True)
+
+- name: checkout awx source repository
+  git:
+    repo: https://github.com/ansible/awx.git
+    dest: "{{ awx__checkout_path }}"
+    version: "{{ awx__version }}"
+    update: no
+  notify: run awx installer
+
+- name: configure installer
+  import_tasks: custom_docker_container.yml
+  when: awx__build_docker_container
+
+- name: configure installer
+  import_tasks: configure_installer.yml
+
+
+# - name: fix bug https://github.com/ansible/awx/pull/3640 for latest centos:7 image
+#   lineinfile:
+#     dest: "{{ awx__installer_path }}/roles/image_build/files/Dockerfile.sdist"
+#     regexp: RUN ln -s /usr/bin/python36 /usr/bin/python3
+#     state: absent
+#   notify: run awx installer
+#   when: awx__version is version_compare('4.0.0', '<=', strict=True)
+
+- meta: flush_handlers

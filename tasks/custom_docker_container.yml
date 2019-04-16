@@ -1,0 +1,7 @@
+- name: generate custom dockerfiles for awx installer
+  include_tasks: "./template_dockerfile.yml"
+  with_items:
+    - source_image: awx_web
+      destination: "{{ awx__checkout_path }}/installer/roles/image_build/templates/Dockerfile.j2"
+    - source_image: awx_task
+      destination: "{{ awx__checkout_path }}/installer/roles/image_build/templates/Dockerfile.task.j2"

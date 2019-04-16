@@ -1,0 +1,7 @@
+FROM ansible/{{ item.source_image }}:{{ awx__version }}
+
+USER root
+
+RUN yum install -y gcc openldap-devel python-devel
+
+RUN /var/lib/awx/venv/ansible/bin/pip install debops[ansible]

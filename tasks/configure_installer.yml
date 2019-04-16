@@ -1,0 +1,123 @@
+# SET Login Credentials
+- name: set admin password
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: 'admin_password="{{ awx__admin_password }}"'
+    regexp: 'admin_password='
+    create: no
+    backup: no
+  notify: run awx installer
+
+- name: set secret key
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: 'secret_key="{{ awx__secret_key }}"'
+    regexp: 'secret_key='
+    create: no
+    backup: no
+  notify: run awx installer
+
+# SET Database Directory
+- name: set database directory
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: 'postgres_data_dir=/opt/pgdocker'
+    regexp: '^postgres_data_dir='
+    create: no
+    backup: no
+  notify: run awx installer
+
+# SET Docker Compose Path
+- name: conditional custom compose path
+  block:
+    - name: create compose directory
+      file:
+        path: "{{ awx__compose_path }}"
+        state: directory
+
+    - name: set compose directory
+      lineinfile:
+        dest: "{{ awx__installer_path }}/inventory"
+        line: "docker_compose_dir={{ awx__compose_path }}"
+        regexp: '^docker_compose_dir='
+        create: no
+        backup: no
+      notify: run awx installer
+  when: awx__compose_path is not none
+
+# SET Custom Docker Image relevant settings
+- name: remove dockerhub base in favor of using custom images
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    regexp: dockerhub_base
+    state: absent
+  notify: run awx installer
+  when: awx__build_docker_container
+
+- name: set custom web image
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: "web_image={{ awx__web_image_name }}"
+    regexp: '^web_image='
+    create: no
+    backup: no
+  notify: run awx installer
+  when: awx__build_docker_container
+
+- name: set custom task image
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: "task_image={{ awx__task_image_name }}"
+    regexp: '^task_image='
+    create: no
+    backup: no
+  notify: run awx installer
+  when: awx__build_docker_container
+
+- name: prepare local system for image build
+  block:
+    - name: install builder dependencies
+      apt:
+        name:
+          - npm
+    - name: set local builds instead of ansible_builder images
+      lineinfile:
+        dest: "{{ awx__installer_path }}/inventory"
+        line: 'use_container_for_build=false'
+        regexp: 'use_container_for_build='
+        create: no
+        backup: no
+      notify: run awx installer
+  when: awx__build_docker_container and not awx__use_awx_builder_image
+
+# SET internal hostnames
+- name: set awx_web container hostname
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: "awx_web_hostname={{ awx__web_hostname }}"
+    regexp: '^awx_web_hostname='
+    create: no
+    backup: no
+  notify: run awx installer
+  when: awx__web_hostname is not none
+
+- name: set awx_task container hostname
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: "awx_task_hostname={{ awx__task_hostname }}"
+    regexp: '^awx_task_hostname='
+    create: no
+    backup: no
+  notify: run awx installer
+  when: awx__task_hostname is not none
+
+# SET forwarded web port
+- name: set forwarded public port of awx_web
+  lineinfile:
+    dest: "{{ awx__installer_path }}/inventory"
+    line: "host_port={{ awx__web_host_port }}"
+    regexp: '^host_port='
+    create: no
+    backup: no
+  notify: run awx installer
+  when: awx__web_host_port is not none
