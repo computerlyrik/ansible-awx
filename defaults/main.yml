@@ -20,4 +20,3 @@ awx__build_docker_container: "{{ awx__builtin_docker_flavor is not none }}"
 awx__use_awx_builder_image: true
 awx__web_image_name: "awx_web_{{ awx__builtin_docker_flavor }}"
 awx__task_image_name: "awx_task_{{ awx__builtin_docker_flavor }}"
-
