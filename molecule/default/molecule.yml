@@ -23,6 +23,7 @@ provisioner:
         awx_docker_flavor: ${AWX_CUSTOM_DOCKER_FLAVOR}
 verifier:
   name: testinfra
+  enabled: false
   lint:
     name: flake8
 
